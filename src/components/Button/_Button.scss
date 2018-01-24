@@ -1,0 +1,19 @@
+.button {
+  @include offset-spacing(s, m);
+  appearance: none;
+  border: 0;
+  cursor: pointer;
+  font-size: inherit;
+  height: $button-height;
+
+  &.success {
+    background-color: $success;
+    border-radius: 4px;
+    color: $white;
+  }
+
+  &.danger {
+    background-color: $white;
+    color: $danger;
+  }
+}

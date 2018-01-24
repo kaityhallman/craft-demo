@@ -1,0 +1,26 @@
+.main {
+  align-items: center;
+  display: flex;
+  font-size: 20px;
+  height: 100vh;
+  justify-content: center;
+}
+
+.padded {
+  display: flex;
+  margin: spacing(l);
+}
+
+.field {
+  @include offset-spacing(s, m);
+
+  appearance: none;
+  border: 1px solid $lightgray;
+  border-radius: 4px;
+  font-size: 1em;
+  width: 300px;
+}
+
+.error {
+  border: 1px solid $danger;
+}

@@ -1,0 +1,11 @@
+@function spacing($scale) {
+  @return map-get($spacing-scale, $scale);
+}
+
+@mixin equal-spacing($padding) {
+  padding: spacing($padding);
+}
+
+@mixin offset-spacing($top-bottom-padding, $left-right-padding) {
+  padding: spacing($top-bottom-padding) spacing($left-right-padding);
+}

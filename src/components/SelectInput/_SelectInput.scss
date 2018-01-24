@@ -1,0 +1,27 @@
+.select {
+  -webkit-appearance: none;
+  appearance: none;
+  background-color: $white;
+  border-bottom-right-radius: 0;
+  border-top-right-radius: 0;
+}
+
+.arrow {
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 5px solid $slategray;
+  height: 0;
+  position: relative;
+  top: 12px;
+  width: 0;
+}
+
+.arrow-wrapper {
+  @include offset-spacing(s, m);
+  background-color: $lightgray;
+  border: 1px solid $lightgray;
+  border-bottom-right-radius: spacing(xs);
+  border-top-right-radius: spacing(xs);
+  display: inline;
+  position: relative;
+}

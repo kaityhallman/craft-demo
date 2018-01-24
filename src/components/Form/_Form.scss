@@ -1,0 +1,31 @@
+.form {
+  border: 1px solid $lightblue;
+  border-radius: spacing(s);
+  width: 800px;
+}
+
+.fieldset {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin: spacing(l);
+  max-width: 50%;
+}
+
+.header {
+  @include offset-spacing(s, m);
+  background-color: $lightblue;
+  color: $blue;
+  margin: 0;
+}
+
+.legend {
+  font-size: 1em;
+}
+
+// marginLeft is overridden from default margin for each row of input fields.
+// marginLeft is calculated by the width of the input field (175px), padding of each
+// row (24px) and padding of the input field (16px).
+.button-wrapper {
+  margin-left: calc(#{$label-width} + #{spacing(l)} + #{spacing(m)});
+}
