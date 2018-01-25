@@ -9,6 +9,7 @@
 .padded {
   display: flex;
   margin: spacing(l);
+  position: relative;
 }
 
 .field {
@@ -19,8 +20,16 @@
   border-radius: 4px;
   font-size: 1em;
   width: 300px;
+
+  &-error {
+    border: 1px solid $danger;
+  }
 }
 
 .error {
-  border: 1px solid $danger;
+  bottom: 0;
+  color: $danger;
+  font-size: .5em;
+  padding-left: spacing(s);
+  position: absolute;
 }

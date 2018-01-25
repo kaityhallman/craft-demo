@@ -16,12 +16,14 @@ class Form extends Component {
       <div className="padded button-wrapper">
         <Button
           category="success"
+          action={this.props.successAction}
         >
           Save changes
         </Button>
-        <span style={{ padding: '0 8px' }}>Or</span>
+        <span style={{ display: 'flex', alignItems: 'center' }}>Or</span>
         <Button
           category="danger"
+          action={this.props.dangerAction}
         >
           Cancel
         </Button>

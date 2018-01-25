@@ -1,7 +1,4 @@
-.multiselect {
-  padding: 0;
-
-  option {
-    @include offset-spacing(s, m);
-  }
+.option {
+  @include offset-spacing(xs, m);
+  margin: 0 -16px;
 }

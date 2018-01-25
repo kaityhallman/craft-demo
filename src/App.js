@@ -8,6 +8,8 @@ import TextInput from './components/TextInput/TextInput';
 
 import options from './constants/options';
 
+import { saveFieldBuilder } from './apis/fieldBuilderApi';
+
 import './App.css';
 
 class App extends Component {
@@ -19,7 +21,10 @@ class App extends Component {
         label: '',
         defaultValue: '',
         multiselectOptions: [],
-        order: null,
+        displayAlpha: false,
+        displaySequential: false,
+        displayRandom: false,
+        required: false,
       },
       currentSelectionOption: '',
       errors: {
@@ -30,19 +35,33 @@ class App extends Component {
     };
   }
 
+  // on change function for text input fields
   onChange = (event) => {
-    const data = this.state.data;
+    const data = {...this.state.data};
+    const errors = {...this.state.errors};
+
     data[event.target.name] = event.target.value;
+    errors[event.target.name] = '';
+
+    this.setState({ data, errors });
+  }
+
+  // toggle required state
+  onCheckboxChange = () => {
+    const data = this.state.data;
+    data.required = !data.required;
     this.setState({ data });
   }
 
-  addSelectionChoice = () => {
+  // add selection choice to select list
+  addSelectionChoice = (selectionOption) => {
     const newOptions = [];
     const data = {...this.state.data};
+    const errors = {...this.state.errors};
     const multiSelectOptions = data.multiselectOptions;
 
-    const value = this.state.currentSelectionOption.toLowerCase().replace(/\s+/g, '-');
-    const text = this.state.currentSelectionOption;
+    const value = selectionOption.toLowerCase().replace(/\s+/g, '-');
+    const text = selectionOption;
     const option = {
       value,
       text,
@@ -50,19 +69,144 @@ class App extends Component {
 
     newOptions.push(option);
 
-    data.multiselectOptions = multiSelectOptions.filter(value => option.value !== value).concat(newOptions);
+    const content = {
+      data,
+      multiSelectOptions,
+      option,
+      errors,
+      newOptions,
+    }
 
-    this.setState({ currentSelectionOption: '', data });
+    const newContent = this.filterChoices(content);
+
+    if (newContent.data.multiselectOptions.length > 50) {
+      errors.multiselect = '50 choices maximum.';
+      this.setState({ errors, currentSelectionOption: '' });
+    } else {
+      this.setState({ errors, currentSelectionOption: '', data: newContent.data });
+    }
   }
 
+  // return choice values and filter out duplicates
+  filterChoices = (content) => {
+    content.data.multiselectOptions = content.multiSelectOptions.filter(input => {
+      if (content.option.value !== input.value) {
+        return content.option;
+      } else {
+        content.errors.multiselect = 'Duplicate entry.';
+        return false;
+      }
+    }).concat(content.newOptions);
+
+    return content;
+  }
+
+  // on change function for add selection choice input field
   onSelectionChoiceChange = (event) => {
-    this.setState({ currentSelectionOption: event.target.value });
+    const errors = {...this.state.errors};
+    errors.multiselect = '';
+    this.setState({ currentSelectionOption: event.target.value, errors });
+  }
+
+  // on change function for select input field
+  // Find more efficient way to do this.
+  onSelectChange = (event) => {
+    const data = {...this.state.data};
+    switch (event.target.value) {
+      case 'alphabetical':
+        data.displayAlpha = true;
+        this.setState({ data });
+        break;
+      case 'most-recent':
+        data.displaySequential = true;
+        this.setState({ data });
+        break;
+      case 'randomize':
+        data.displayRandom = true;
+        this.setState({ data });
+        break;
+      default:
+        data.displayAlpha = true;
+        this.setState({ data });
+    }
+  }
+
+  // clear out builder and all fields completely
+  clearBuilder = () => {
+    const data = Object.assign({}, this.state.data, {
+      label: '',
+      required: false,
+      multiselectOptions: [],
+      displayAlpha: false,
+      displaySequential: false,
+      displayRandom: false,
+      defaultValue: '',
+    });
+
+    this.setState({ data });
+  }
+
+  // save field values to endpoint
+  saveBuilder = () => {
+    const fieldJson = {
+		  label: this.state.data.label,
+		  required: this.state.data.required,
+		  choices: this.state.data.multiselectOptions,
+		  displayAlpha: this.state.data.displayAlpha === true || false, // use displayAlpha by default if input is untouched
+      displaySequential: this.state.data.displaySequential,
+      displayRandom: this.state.data.displayRandom,
+		  default: this.state.data.defaultValue,
+		};
+
+    const formIsValid = this.checkIfValid(fieldJson);
+
+    if (formIsValid) {
+      saveFieldBuilder(fieldJson)
+        .then((response) => {
+          console.log('Field JSON:', fieldJson);
+          console.log('API Response: ', response);
+        })
+        .catch((error) => {
+          console.log('error', error);
+        });
+    }
+  }
+
+  // validate form values
+  checkIfValid = (json) => {
+    const errors = {...this.state.errors};
+    let formIsValid = false;
+
+    if (json.label.length < 1) {
+      console.log('length less than 1')
+      errors.label = 'Label is required.';
+      formIsValid = false;
+    }
+
+    if (json.choices.length < 1) {
+      errors.multiselect = 'Choices required';
+      formIsValid = false;
+    }
+
+    if (json.choices.filter(option => json.default !== option.text)) {
+      // function to add selection in a better way here.
+      this.addSelectionChoice(json.default);
+      formIsValid = true;
+    }
+
+    this.setState({ errors });
+
+    return formIsValid;
   }
 
   render() {
     return (
       <main className="main">
-        <Form legend="Field Builder">
+        <Form
+          successAction={this.saveBuilder}
+          dangerAction={this.clearBuilder}
+          legend="Field Builder"
+        >
           <TextInput
             htmlId="label-field"
             children="Label"
@@ -77,7 +221,7 @@ class App extends Component {
               Type
             </Label>
             <span>
-              Multi-Select <input type="checkbox" defaultChecked /> A value is required
+              Multi-Select <input type="checkbox" onChange={this.onCheckboxChange} checked={this.state.data.required} /> A value is required
             </span>
           </div>
           <TextInput
@@ -91,10 +235,11 @@ class App extends Component {
           <MultiSelectInput
             htmlId="choices-field"
             children="Choices"
+            selectionChoiceChildren="Add Choices"
             name="choices"
-            options={this.state.multiSelectOptions}
+            options={this.state.data.multiselectOptions}
             error={this.state.errors.multiselect}
-            action={this.addSelectionChoice}
+            action={() => this.addSelectionChoice(this.state.currentSelectionOption)}
             actionText="Add Selection Choice"
             onChange={this.onSelectionChoiceChange}
             value={this.state.currentSelectionOption}
@@ -104,6 +249,7 @@ class App extends Component {
             children="Order"
             name="order"
             options={options}
+            onChange={this.onSelectChange}
           />
         </Form>
       </main>

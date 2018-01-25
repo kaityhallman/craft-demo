@@ -8,12 +8,13 @@ import './_TextInput.scss';
 
 function TextInput({ htmlId, name, type = "text", required = false, onChange, value, error, children, action, actionText, ...props }) {
   const inputClasses = classnames('field', {
-    'field error': error,
+    'field-error': error,
   });
 
   return (
     <div className="padded">
       <Label htmlFor={htmlId} children={children} required={required} />
+      {error && <div className="error">{error}</div>}
       <input
         id={htmlId}
         type={type}
@@ -23,7 +24,6 @@ function TextInput({ htmlId, name, type = "text", required = false, onChange, va
         {...props}
         className={inputClasses}
       />
-      {error && <div className="error" style={{color: 'red'}}>{error}</div>}
       {action && <Button action={action}>{actionText}</Button>}
     </div>
   );

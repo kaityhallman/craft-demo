@@ -4,7 +4,7 @@ import Label from '../Label/Label';
 
 import './_SelectInput.scss';
 
-function SelectInput({ name, children, required, htmlId, options }) {
+function SelectInput({ name, children, required, htmlId, options, onChange }) {
   return (
     <div className="padded">
       <Label htmlFor={name} children={children} required={required} />
@@ -12,6 +12,7 @@ function SelectInput({ name, children, required, htmlId, options }) {
         className="field select"
         name={name}
         id={htmlId}
+        onChange={onChange}
       >
         {options.map(option => {
           return <option key={option.id} value={option.value}>{option.text}</option>;
@@ -30,6 +31,7 @@ SelectInput.propTypes = {
   required: PropTypes.bool,
   htmlId: PropTypes.string.isRequired,
   options: PropTypes.array.isRequired,
+  onChange: PropTypes.func.isRequired,
 };
 
 SelectInput.defaultProps = {

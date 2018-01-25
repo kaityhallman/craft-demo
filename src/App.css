@@ -7,7 +7,8 @@
 
 .padded {
   display: flex;
-  margin: 24px; }
+  margin: 24px;
+  position: relative; }
 
 .field {
   padding: 8px 16px;
@@ -16,9 +17,15 @@
   border-radius: 4px;
   font-size: 1em;
   width: 300px; }
+  .field-error {
+    border: 1px solid #f00; }
 
 .error {
-  border: 1px solid #f00; }
+  bottom: 0;
+  color: #f00;
+  font-size: .5em;
+  padding-left: 8px;
+  position: absolute; }
 
 .button {
   padding: 8px 16px;
@@ -63,6 +70,10 @@
   display: inline-block;
   padding: 8px;
   width: 175px; }
+
+.option {
+  padding: 4px 16px;
+  margin: 0 -16px; }
 
 .select {
   -webkit-appearance: none;

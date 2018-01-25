@@ -8,27 +8,26 @@ import './_MultiSelectInput.scss';
 function MultiSelectInput({ name, htmlId, options, required, children, selectionChoiceChildren, action, onChange, error, value, actionText }) {
   return (
     <div>
-      {options.length < 1 && <SelectionChoiceInput
+      <SelectionChoiceInput
         htmlId={htmlId}
-        children={children}
+        children={selectionChoiceChildren}
         name={name}
         onChange={onChange}
         error={error}
         value={value}
         actionText={actionText}
         action={action}
-      />}
-      {options.length > 0 && <span>
+      />
+      {options.length > 0 && <span className="padded">
         <Label htmlFor={htmlId} children={children} required={required} />
         <select
           name={name}
           id={htmlId}
           multiple
           className="field multiselect"
-          size={options.length}
         >
           {options.map(option => {
-            return <option key={option.id} value={option.value}>{option.text}</option>;
+            return <option key={option.value} className="option" value={option.value}>{option.text}</option>;
           })}
         </select>
       </span>}
