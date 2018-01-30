@@ -109,7 +109,6 @@ class App extends Component {
   }
 
   // on change function for select input field
-  // Find more efficient way to do this.
   onSelectChange = (event) => {
     const data = {...this.state.data};
     switch (event.target.value) {
@@ -177,19 +176,20 @@ class App extends Component {
     const errors = {...this.state.errors};
     let formIsValid = false;
 
+    // label must have length greater than 1
     if (json.label.length < 1) {
-      console.log('length less than 1')
       errors.label = 'Label is required.';
       formIsValid = false;
     }
 
+    // must add choices to list
     if (json.choices.length < 1) {
       errors.multiselect = 'Choices required';
       formIsValid = false;
     }
 
+    // make sure to add default value to list if it has not been added to choices list already
     if (json.choices.filter(option => json.default !== option.text)) {
-      // function to add selection in a better way here.
       this.addSelectionChoice(json.default);
       formIsValid = true;
     }
