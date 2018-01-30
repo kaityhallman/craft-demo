@@ -18,7 +18,7 @@ function MultiSelectInput({ name, htmlId, options, required, children, selection
         actionText={actionText}
         action={action}
       />
-      {options.length > 0 && <span className="padded">
+      {options.length > 0 && !error && <span className="padded">
         <Label htmlFor={htmlId} children={children} required={required} />
         <select
           name={name}

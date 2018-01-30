@@ -67,7 +67,9 @@ class App extends Component {
       text,
     };
 
-    newOptions.push(option);
+    if (value.length && text.length) {
+      newOptions.push(option);
+    }
 
     const content = {
       data,
@@ -176,6 +178,12 @@ class App extends Component {
     const errors = {...this.state.errors};
     let formIsValid = false;
 
+    // make sure to add default value to list if it has not been added to choices list already
+    if (json.choices.filter(option => json.default !== option.text)) {
+      this.addSelectionChoice(json.default);
+      formIsValid = true;
+    }
+
     // label must have length greater than 1
     if (json.label.length < 1) {
       errors.label = 'Label is required.';
@@ -186,12 +194,6 @@ class App extends Component {
     if (json.choices.length < 1) {
       errors.multiselect = 'Choices required';
       formIsValid = false;
-    }
-
-    // make sure to add default value to list if it has not been added to choices list already
-    if (json.choices.filter(option => json.default !== option.text)) {
-      this.addSelectionChoice(json.default);
-      formIsValid = true;
     }
 
     this.setState({ errors });
